@@ -1,0 +1,104 @@
+<div class="ui container">
+    <div class="ui grid" *ngIf="list">
+        <div class="twelve wide column">
+            <h1 class="ui header">{{list.title}}</h1>
+        </div>
+
+            <div class="six wide column">
+                <h3 class="ui header">{{list.seeker.firstname}} {{list.seeker.lastname}}</h3>
+                <p>{{list.seeker.address}}</p>
+                <h4 class="ui header">Fällig bis: {{list.due_date}}</h4>
+            </div>
+
+            <!--div class="ui divider"></div-->
+
+            <div class="six wide column">
+
+                <!-- Seekeransicht: wird nur angezeigt wenn der derzeitige User der Seeker ist -
+                (von wem) wurde die Liste übernommen, anzeigen der final_sum wenn sie verfügbar ist -->
+
+                <p *ngIf="!isVolunteer() && !list.volunteer_id">Ihre Einkaufsliste wurde noch nicht übernommen!</p>
+                <p *ngIf="!isVolunteer() && list.volunteer_id && !list.final_sum">Ihre Einkaufsliste wurde von {{list.volunteer.firstname}} {{list.volunteer.lastname}} übernommen!</p>
+                <p *ngIf="!isVolunteer() && list.volunteer_id && list.final_sum">{{list.volunteer.firstname}} {{list.volunteer.lastname}} hat die Einkaufsliste mit einem Gesamtwert von {{list.final_sum}} erledigt!</p>
+
+
+                <!-- Volunteeransicht: wird nur angezeigt wenn der derzeitige User ein Freiwilliger ist -
+                zuerst Liste übernehmen, und wenn er bereits als F der Liste eingetragen ist wird final_sum angezeigt -->
+
+
+                <form *ngIf="isVolunteer() || isCurrentUserVolunteerOfList(list.volunteer_id)" class="ui small form" [formGroup]="volunteerForm" (ngSubmit)="submitVolunteer()">
+
+                    <div *ngIf="!list.volunteer_id" class="field">
+                        <button type="submit" class="ui yellow button">Einkauf übernehmen</button>
+                    </div>
+
+                    <div *ngIf="isCurrentUserVolunteerOfList(list.volunteer_id) && !list.final_sum">
+                        <div class="field">
+                            <label>Wieviel hat der Einkauf gekostet?</label>
+                            <input type="number" formControlName="final_sum">
+                        </div>
+
+                        <button type="submit" class="ui button">Speichern</button>
+                    </div>
+                </form>
+
+
+                <p *ngIf="list.final_sum">Erledigt von <b>{{list.volunteer.firstname}} {{list.volunteer.lastname}}</b> mit einer Endsumme von <b>{{list.final_sum}}€</b>.</p>
+            </div>
+
+
+
+            <div class="twelve wide column">
+                <div class="ui divider"></div>
+                <h4 class="ui header">Einkaufsliste:</h4>
+                <ul>
+                    <li *ngFor="let item of list.items">
+                        <span>{{item.amount}} {{item.unit}} <b>{{item.title}}</b> max.: {{item.price}}€</span>
+                    </li>
+                </ul>
+                <div class="ui divider"></div>
+            </div>
+
+
+
+
+            <!-- Kommentaransicht: wird nur angezeigt wenn der derzeitige User auch der Freiwillige oder der Creator der Liste ist -->
+
+            <div *ngIf="isCurrentUserCreatorOfList(list.seeker_id)|| isCurrentUserVolunteerOfList(list.volunteer_id)" class="twelve wide column">
+                <div *ngIf="list.comments.length != 0">
+                    <h4>Kommentare: </h4>
+                    <div *ngFor="let comment of list.comments">
+                        <b *ngIf="comment.user_id == list.volunteer_id">{{list.volunteer.firstname}} {{list.volunteer.lastname}}: </b>
+                        <b *ngIf="comment.user_id == list.seeker_id">{{list.seeker.firstname}} {{list.seeker.lastname}}: </b>
+                        <p>{{comment.text}}</p>
+                    </div>
+                </div>
+
+
+                <h4>Neuer Kommentar:</h4>
+                <form class="ui small form" [formGroup]="commentForm" (ngSubmit)="submitComment()">
+                    <input type="hidden" name="id">
+                    <div class="field">
+                        <label>Text</label>
+                        <input type="text" formControlName="text">
+                    </div>
+
+                    <button type="submit" class="ui button">Kommentar senden</button>
+                </form>
+
+            </div>
+
+        <div class="twelve wide column">
+            <button [routerLink]="'/lists'" class="ui red button">Zurück zur Übersicht</button>
+            <button *ngIf="!isVolunteer() && !list.volunteer_id" class="ui tiny red labeled icon button" (click)="removeList()"  [routerLink]="'/lists'"><i class="remove icon"></i>Liste löschen</button>
+            <a *ngIf="!isVolunteer() && !list.volunteer_id" class="ui tiny yellow labeled icon button" [routerLink]="['../../admin', list?.id]"><i class="write icon"></i>Liste bearbeiten</a>
+
+
+        </div>
+
+
+            <!-- Bearbeiten/Löschen: wird nur angezeigt wenn der derzeitige User auch der Creator der Liste ist und noch kein Freiwilliger für die Liste eingetragen ist -->
+
+        <!--/div-->
+    </div>
+</div>

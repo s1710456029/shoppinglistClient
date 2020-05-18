@@ -1,0 +1,12 @@
+
+<div class="content">
+    <div class="header">{{list.title}}</div>
+    <div class="description">{{list.due_date}}</div>
+    <div class="metadata">
+        <span *ngIf="list.final_sum">Erledigt</span>
+        <span *ngIf="isVolunteer() && !list.final_sum && list.volunteer_id">Noch Offen</span>
+        <span *ngIf="!list.volunteer_id">Noch Frei</span>
+        <span *ngIf="!isVolunteer() && !list.final_sum && list.volunteer_id">Wurde übernommen</span><br/>
+        <span>{{list.seeker.firstname}} {{list.seeker.lastname}}</span>
+    </div>
+</div>

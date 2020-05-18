@@ -1,0 +1,21 @@
+<div class="ui container">
+
+    <!--div *ngIf="isVolunteer()" class="ui middle aligned button" [routerLink]="lists">Alle Listen</div>
+    <div *ngIf="isVolunteer()" class="ui middle aligned button" [routerLink]="getLink()">Übernommene Listen</div>
+    <div *ngIf="isVolunteer()" class="ui middle aligned button" [routerLink]="freelists">Freie Listen</div-->
+
+    <div>
+
+        <div *ngFor="let list of lists" class="ui middle aligned selection divided list">
+            <a *ngIf="isVolunteer() || isCurrentUserCreatorOfList(list.seeker_id)"class="item bs-shopping-list-entry" [list]="list" [routerLink]="list.id"></a>
+        </div>
+
+        <div *ngIf="!lists" class="ui active dimmer">
+            <div class="ui large text loader">Daten werden geladen...</div>
+        </div>
+
+        <p *ngIf="lists && !lists.length">Es wurden noch keine Listen erstellt!</p>
+    </div>
+
+</div>
+

@@ -1,0 +1,61 @@
+<div class="ui container">
+    <h1>Formular für Einkaufslisten</h1>
+    <form class="ui large form" [formGroup]="shoppinglistForm" (ngSubmit)="submitForm()">
+        <input type="hidden" name="id">
+
+        <div class="field">
+            <label>Titel</label>
+            <input formControlName="title">
+            <div *ngIf="errors.title" class="ui negative message">{{errors.title}}</div>
+        </div>
+
+        <div class="field">
+            <label>Fällig bis:</label>
+            <input type="date" formControlName="due_date">
+            <div *ngIf="errors.due_date" class="ui negative message">{{errors.due_date}}</div>
+        </div>
+
+        <div class="field">
+            <label>Artikel</label>
+            <div formArrayName="items">
+
+                <div class="fields" *ngFor="let control of items?.controls; index as i; last as l" [formGroupName]="i">
+                    <input type="hidden" name="id">
+
+                    <div class="field">
+                        <label>Bezeichnung</label>
+                        <input formControlName="title">
+                    </div>
+
+                    <div class="field">
+                        <label>Menge</label>
+                        <input type="number" formControlName="amount">
+                    </div>
+
+                    <div class="field">
+                        <label for="unit">Einheit</label>
+                        <select id="unit" formControlName="unit">
+                            <option value="Liter">Liter</option>
+                            <option value="kg">kg</option>
+                            <option value="dag">dag</option>
+                            <option value="g">g</option>
+                            <option value="Stück">Stück</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Max. Preis</label>
+                        <input type="number" formControlName="price">
+                    </div>
+
+                    <button (click)="addItemControl()" class="ui large button" type="button">+</button>
+                </div>
+                <div *ngIf="errors.item" class="ui negative message">{{errors.item}}</div>
+            </div>
+        </div>
+
+        <button type="submit" class="ui button" [disabled]="shoppinglistForm.invalid">Speichern</button>
+    </form>
+
+</div>
+
